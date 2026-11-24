@@ -1,46 +1,39 @@
-# Arvostra — V1 Static Website (Netlify & GitHub Pages Ready)
+# Arvostra — V1 Website (Vite + React + TypeScript)
 
 Minimalist Digital Studio & Technology Solutions Marketplace (`https://arvostra.com`), founded by Rahul Adepu.
 
-## Architecture
+## Simple, Zero-Friction Static Stack
 
-- **Framework:** Next.js 15 (`output: "export"`, `trailingSlash: true`) + React 19 + TypeScript
-- **Styling & Motion:** Tailwind CSS + custom `--arv-*` tokens + GSAP ScrollTrigger (with `prefers-reduced-motion` support)
-- **Static Output:** Builds pure HTML/CSS/JS to `out/` with `out/.nojekyll`, `out/404.html`, `out/sitemap.xml`, `out/robots.txt`, and `out/__forms.html`
-- **Form Delivery (Serverless-Free):**
-  1. **Web3Forms** (`NEXT_PUBLIC_WEB3FORMS_KEY`) — works identically on GitHub Pages, Netlify, and custom domains (\$0 free tier)
-  2. **Formspree / Webhook** (`NEXT_PUBLIC_FORMSPREE_ENDPOINT` / `NEXT_PUBLIC_INQUIRY_WEBHOOK_URL`) — optional static endpoints
-  3. **Netlify Forms Auto-Detect** (`public/__forms.html` + `netlify.toml`) — works automatically out of the box when deployed on Netlify
-  4. **Honest Fallback** — If no relay is configured, displays a pre-filled `mailto:rahuladepu99@gmail.com` link and one-click `Copy Project Brief` button instead of falsely claiming delivery
+- **Stack:** Vite 6 + React 19 + TypeScript + Pure CSS (`--arv-*` tokens) + GSAP ScrollTrigger
+- **Relative Asset Paths (`base: "./"`):** Works identically with zero path configuration on:
+  - GitHub Pages project URLs (e.g., `https://rahuladepu.github.io/Arvostra/`)
+  - GitHub Pages custom domains (`https://arvostra.com/`)
+  - Netlify (`*.netlify.app` or `https://arvostra.com/`)
+- **Default Light Mode + Natural Dark Mode:** Loads in warm cream light mode by default, with a persistent sun/moon toggle to Midnight Pine dark mode.
+- **Multi-Page Static Output (`dist/`):**
+  - `dist/index.html` — Main studio showcase, live demos, services, process, founder, FAQ, and Project Inquiry
+  - `dist/feedback.html` — Dedicated Bug Report & Suggestions page
+  - `dist/404.html` — Self-contained interactive Arvostra Comic 404 page (works at any nested URL depth)
+  - `dist/__forms.html` — Netlify Forms auto-detection blueprint (`arvostra-inquiry` & `arvostra-feedback`)
 
-## Local Development & Static Preview
+## Local Commands
 
 ```bash
 npm install
-npm run dev      # Development server at http://localhost:3000
-npm run build    # Static export to ./out
-npm run typecheck
+npm run dev       # Local dev server
+npm run typecheck # Strict TypeScript check
+npm run build     # Outputs pure static files to ./dist
+npm run preview   # Preview ./dist locally
 ```
-
-## Deploy to Netlify
-
-1. Connect the Git repository in Netlify (or drag-and-drop `out/`).
-2. `netlify.toml` automatically configures:
-   - Build command: `npm run build`
-   - Publish directory: `out`
-   - `NEXT_PUBLIC_ENABLE_NETLIFY_FORMS=true` (activates Netlify Forms via `public/__forms.html`)
-   - Security headers & immutable asset caching
-3. In Netlify Dashboard → **Forms** → **Form notifications**, add an email notification to `rahuladepu99@gmail.com` (or set `NEXT_PUBLIC_WEB3FORMS_KEY`).
-4. Add custom domain `arvostra.com` in Netlify → **Domain management**.
 
 ## Deploy to GitHub Pages
 
-1. Push to GitHub `main` branch — `.github/workflows/deploy-github-pages.yml` builds `out/` automatically.
-2. In GitHub repo → **Settings → Pages**, set **Source** to **GitHub Actions**.
-3. Configure form delivery:
-   - Get a free access key at [web3forms.com](https://web3forms.com) for `rahuladepu99@gmail.com`.
-   - Add it as a GitHub Repository Secret: `NEXT_PUBLIC_WEB3FORMS_KEY`.
-4. Domain / Subpath options:
-   - **Custom domain (`arvostra.com`):** Add Repo Variable `CUSTOM_DOMAIN=arvostra.com`, leave `NEXT_PUBLIC_BASE_PATH` empty, and configure DNS (`A` records to GitHub Pages IPs `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153` + `www` `CNAME` to `rahuladepu.github.io`).
-   - **Project subpath (`https://rahuladepu.github.io/<repo>/`):** Set Repo Variable `NEXT_PUBLIC_BASE_PATH=/<repo>` and `NEXT_PUBLIC_SITE_URL=https://rahuladepu.github.io/<repo>`.
-# Arvostra
+1. Push to `main` — `.github/workflows/deploy-github-pages.yml` automatically builds `dist/` and deploys it.
+2. In GitHub → **Settings → Pages**, set **Source** to **GitHub Actions**.
+3. For automated email delivery on GitHub Pages, get a free key at [web3forms.com](https://web3forms.com) for `rahuladepu99@gmail.com` and add it as Repository Secret `VITE_WEB3FORMS_KEY` (without it, forms honestly provide a pre-filled `mailto:` + Copy Brief fallback).
+4. When connecting custom domain `arvostra.com`, add Repository Variable `CUSTOM_DOMAIN=arvostra.com`.
+
+## Deploy to Netlify
+
+1. Import the Git repository (or drag-and-drop `dist/`). `netlify.toml` sets `command = "npm run build"`, `publish = "dist"`, and `VITE_ENABLE_NETLIFY_FORMS = "true"`.
+2. In Netlify → **Forms → Form notifications**, set email alerts to `rahuladepu99@gmail.com` for both `arvostra-inquiry` and `arvostra-feedback`.

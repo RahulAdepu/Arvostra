@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f4ee" />
+    <title>404 — Page Not Found | Arvostra</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("arvostra_theme");
+          var theme = saved === "dark" ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+          document.documentElement.style.colorScheme = theme;
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) {
+            meta.setAttribute("content", theme === "dark" ? "#0a1b1e" : "#f5f4ee");
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+      :root {
+        --page: #f5f4ee;
+        --paper: #ffffff;
+        --ink: #10292d;
+        --muted: #586663;
+        --rule: #e2e0d6;
+        --deep: #0c2f35;
+        --deep-ink: #eef2ec;
+        --gold: #8c7b33;
+        --lilac: #cdc8f6;
+        --lilac-ink: #1e1a44;
+        --accent: #0f3238;
+        --accent-ink: #ffffff;
+        --sans: "Inter Tight", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      }
+      html[data-theme="dark"] {
+        --page: #0a1b1e;
+        --paper: #102529;
+        --ink: #edf1ec;
+        --muted: #98aea9;
+        --rule: #1e3a40;
+        --deep: #061215;
+        --deep-ink: #edf1ec;
+        --gold: #c9b458;
+        --lilac: #262247;
+        --lilac-ink: #dcd8ff;
+        --accent: #edf1ec;
+        --accent-ink: #0a1b1e;
+      }
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        min-height: 100svh;
+        background: var(--page);
+        color: var(--ink);
+        font-family: var(--sans);
+        font-size: 15px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: inherit; text-decoration: none; }
+      button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+      .wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+      .nav {
+        border-bottom: 1px solid var(--rule);
+        background: var(--page);
+      }
+      .nav-in {
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        font-size: 16.5px;
+        letter-spacing: -0.02em;
+      }
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .issue {
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-weight: 500;
+      }
+      .theme-btn {
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 999px;
+        border: 1px solid var(--rule);
+        background: var(--paper);
+        color: var(--ink);
+      }
+      .main {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 44px 24px 60px;
+      }
+      .head {
+        text-align: center;
+        max-width: 680px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .eyebrow {
+        padding: 6px 14px;
+        margin-bottom: 18px;
+        border-radius: 999px;
+        border: 1px solid var(--rule);
+        background: var(--paper);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        color: var(--gold);
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(30px, 4.2vw, 48px);
+        line-height: 1.06;
+        letter-spacing: -0.035em;
+        font-weight: 400;
+      }
+      .gold { color: var(--gold); }
+      .sub {
+        margin: 14px 0 0;
+        font-size: 16px;
+        color: var(--muted);
+        max-width: 540px;
+      }
+      .frame {
+        margin: 34px 0 0;
+        width: min(860px, 100%);
+        border-radius: 16px;
+        border: 2px solid var(--ink);
+        background: var(--paper);
+        box-shadow: 7px 7px 0 rgba(16, 41, 45, 0.16);
+        overflow: hidden;
+      }
+      html[data-theme="dark"] .frame {
+        border-color: var(--rule);
+        box-shadow: 7px 7px 0 rgba(0, 0, 0, 0.45);
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding: 10px 16px;
+        background: var(--deep);
+        color: var(--deep-ink);
+        border-bottom: 2px solid var(--ink);
+      }
+      html[data-theme="dark"] .topbar { border-color: var(--rule); }
+      .narration {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        font-weight: 600;
+        color: var(--lilac);
+      }
+      html[data-theme="dark"] .narration { color: var(--lilac-ink); }
+      .path-pill {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 11.5px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        color: var(--deep-ink);
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .art-wrap {
+        background: #f5f4ee;
+        line-height: 0;
+      }
+      .art-wrap img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      html[data-theme="dark"] .art-wrap img {
+        filter: brightness(0.93) contrast(1.02);
+      }
+      .caption {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 16px 20px;
+        border-top: 2px solid var(--ink);
+        background: var(--paper);
+      }
+      html[data-theme="dark"] .caption { border-color: var(--rule); }
+      .dialogue {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        font-size: 14px;
+      }
+      .dialogue p { margin: 0; }
+      .spk { font-weight: 600; color: var(--ink); }
+      .spk-gold { font-weight: 600; color: var(--gold); }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 44px;
+        padding: 0 22px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 500;
+        white-space: nowrap;
+        transition: transform 0.2s, opacity 0.2s;
+      }
+      .btn:hover { transform: translateY(-1px); }
+      .btn-sm { height: 36px; padding: 0 15px; font-size: 13px; flex: none; }
+      .btn-dark { background: var(--accent); color: var(--accent-ink); }
+      .btn-lilac { background: var(--lilac); color: var(--lilac-ink); }
+      .btn-ghost { border: 1px solid var(--rule); background: var(--paper); color: var(--ink); }
+      .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 28px;
+      }
+      .report-note {
+        margin-top: 18px;
+        font-size: 12.5px;
+        color: var(--muted);
+        text-align: center;
+      }
+      .report-note a {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        color: var(--ink);
+      }
+      @media (max-width: 720px) {
+        .caption { flex-direction: column; align-items: flex-start; padding: 14px 16px; }
+        .issue { display: none; }
+        .frame { box-shadow: 4px 4px 0 rgba(16, 41, 45, 0.16); }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="wrap nav-in">
+        <a id="home-logo" href="./" class="brand" aria-label="Arvostra Home">
+          <svg width="24" height="24" viewBox="0 0 32 32" aria-hidden="true">
+            <rect x="1.5" y="1.5" width="29" height="29" rx="8" fill="var(--accent)" />
+            <path d="M8.5 23L14.4 9h3.2L23.5 23h-3.6l-1.3-3.3h-5.2L12.1 23H8.5zm5.9-6.2h3.2L16 12.6l-1.6 4.2z" fill="var(--page)" />
+            <circle cx="16" cy="22.4" r="1.7" fill="var(--gold)" />
+          </svg>
+          <span>Arvostra</span>
+        </a>
+        <div class="nav-right">
+          <span class="issue">ISSUE #404 · ROUTE NOT FOUND</span>
+          <button type="button" id="theme-toggle" class="theme-btn" aria-label="Switch color theme"></button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="head">
+        <div class="eyebrow">HTTP 404 • MISSING BLUEPRINT</div>
+        <h1>Looks like we haven&apos;t <span class="gold">built</span> this page yet.</h1>
+        <p class="sub">
+          Our studio assistant checked the cloud box twice. The link may have moved, or you&apos;ve discovered a route waiting for a V1 build.
+        </p>
+      </div>
+
+      <figure class="frame">
+        <div class="topbar">
+          <span class="narration">MEANWHILE, INSIDE THE ARVOSTRA STUDIO…</span>
+          <code id="missing-path" class="path-pill">GET /404 → 404</code>
+        </div>
+        <div class="art-wrap">
+          <img
+            id="comic-img"
+            src="./comic-404.jpg"
+            alt="Editorial comic illustration showing a calm Arvostra developer with coffee watching a puzzled geometric robot inspect an open cloud shipping box beside a 404 blueprint easel."
+            width="1408"
+            height="768"
+          />
+        </div>
+        <figcaption class="caption" aria-live="polite">
+          <div class="dialogue">
+            <p><span class="spk">AI Assistant:</span> <span id="bot-line"></span></p>
+            <p><span class="spk-gold">Founder:</span> <span id="founder-line"></span></p>
+          </div>
+          <button type="button" id="next-caption" class="btn btn-ghost btn-sm">
+            Next caption (1/5)
+          </button>
+        </figcaption>
+      </figure>
+
+      <div class="actions">
+        <a id="cta-home" href="./" class="btn btn-dark">Back to Arvostra</a>
+        <a id="cta-demos" href="./#demos" class="btn btn-lilac">Explore Live Demos</a>
+        <a id="cta-inquiry" href="./#inquiry" class="btn btn-ghost">Want us to build this page? →</a>
+      </div>
+
+      <p class="report-note">
+        Think this link shouldn&apos;t be broken?
+        <a id="cta-report" href="./feedback.html?feedback=404">Report this broken link →</a>
+      </p>
+    </main>
+
+    <script>
+      (function () {
+        // Resolve the site root reliably from ANY nested path on GitHub Pages (/Arvostra/a/b) or root domains (arvostra.com/a/b)
+        var path = window.location.pathname || "/404";
+        var isGithubProject =
+          window.location.hostname.endsWith("github.io") &&
+          path.split("/").filter(Boolean).length > 0;
+        var base = isGithubProject ? "/" + path.split("/").filter(Boolean)[0] + "/" : "/";
+
+        document.getElementById("missing-path").textContent = "GET " + path + " → 404";
+        document.getElementById("comic-img").src = base + "comic-404.jpg";
+        document.getElementById("home-logo").href = base;
+        document.getElementById("cta-home").href = base;
+        document.getElementById("cta-demos").href = base + "#demos";
+        document.getElementById("cta-inquiry").href = base + "#inquiry";
+        document.getElementById("cta-report").href =
+          base + "feedback.html?feedback=404&from=" + encodeURIComponent(path);
+
+        var strips = [
+          {
+            bot: "“Checked AWS, checked the edge CDN, even checked the cloud shipping box — this route isn't in there.”",
+            founder: "“Relax. If it doesn't exist yet, we can probably build it.”",
+          },
+          {
+            bot: "“Good news: zero bugs found on this page. Bad news: zero page found either.”",
+            founder: "“Technically that's 100% reliability on nothing.”",
+          },
+          {
+            bot: "“I asked the AI where this URL went. It wrote a very confident essay about a page that doesn't exist.”",
+            founder: "“This is why we validate outputs, buddy.”",
+          },
+          {
+            bot: "“DNS resolved. SSL is green. The page just wandered off before deployment.”",
+            founder: "“Send them over to the live demos while we look.”",
+          },
+          {
+            bot: "“Wait — could this missing URL actually be their next custom build?”",
+            founder: "“Only one way to find out.”",
+          },
+        ];
+
+        var idx = 0;
+        var botEl = document.getElementById("bot-line");
+        var founderEl = document.getElementById("founder-line");
+        var nextBtn = document.getElementById("next-caption");
+
+        function renderCaption() {
+          botEl.textContent = strips[idx].bot;
+          founderEl.textContent = strips[idx].founder;
+          nextBtn.textContent = "Next caption (" + (idx + 1) + "/" + strips.length + ")";
+        }
+        renderCaption();
+        nextBtn.addEventListener("click", function () {
+          idx = (idx + 1) % strips.length;
+          renderCaption();
+        });
+
+        var toggleBtn = document.getElementById("theme-toggle");
+        var moonSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.4 14.5A8.5 8.5 0 019.5 3.6a8.5 8.5 0 1010.9 10.9z"/></svg>';
+        var sunSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>';
+
+        function syncThemeIcon() {
+          var isDark = document.documentElement.getAttribute("data-theme") === "dark";
+          toggleBtn.innerHTML = isDark ? sunSvg : moonSvg;
+          toggleBtn.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+          toggleBtn.setAttribute("aria-pressed", String(isDark));
+        }
+        syncThemeIcon();
+        toggleBtn.addEventListener("click", function () {
+          var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+          document.documentElement.setAttribute("data-theme", next);
+          document.documentElement.style.colorScheme = next;
+          try { localStorage.setItem("arvostra_theme", next); } catch (e) {}
+          syncThemeIcon();
+        });
+      })();
+    </script>
+  </body>
+</html>

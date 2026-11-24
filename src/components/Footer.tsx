@@ -1,7 +1,4 @@
-"use client";
-
 import * as React from "react";
-import Link from "next/link";
 import { BRAND } from "@/lib/data";
 import { ArvostraMark, Icon, ICONS } from "./Icons";
 
@@ -35,7 +32,7 @@ export function Footer({
         { label: "Founder / About", href: "#about" },
         { label: "FAQ", href: "#faq" },
         { label: "Start a Project", href: "#inquiry" },
-        { label: "Report a Bug / Feedback", href: "/feedback/" },
+        { label: "Report a Bug / Feedback", href: "./feedback.html" },
       ],
     },
   ];
@@ -63,16 +60,16 @@ export function Footer({
             <div key={col.title} className="arv-foot-col">
               <b>{col.title}</b>
               {col.links.map((link) =>
-                link.href.startsWith("/") ? (
-                  <Link key={link.label} href={link.href}>
-                    {link.label}
-                  </Link>
-                ) : (
+                link.href.startsWith("#") ? (
                   <a
                     key={link.label}
                     href={link.href}
                     onClick={onNavigate(link.href)}
                   >
+                    {link.label}
+                  </a>
+                ) : (
+                  <a key={link.label} href={link.href}>
                     {link.label}
                   </a>
                 )

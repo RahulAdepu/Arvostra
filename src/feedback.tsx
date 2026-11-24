@@ -1,33 +1,25 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { BRAND } from "@/lib/data";
-import { ArvostraMark, Icon, ICONS } from "@/components/Icons";
-import { FeedbackSection } from "@/components/FeedbackSection";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import * as React from "react";
+import { createRoot } from "react-dom/client";
+import { BRAND } from "./lib/data";
+import { ArvostraMark, Icon, ICONS } from "./components/Icons";
+import { FeedbackSection } from "./components/FeedbackSection";
+import { ThemeToggle } from "./components/ThemeToggle";
+import "./styles.css";
 
-export const metadata: Metadata = {
-  title: "Report a Bug or Suggestion",
-  description:
-    "Report a bug, broken link, or suggest a new demo or feature for Arvostra. Anonymous-friendly, privacy-conscious, and reviewed directly by Rahul Adepu.",
-  alternates: {
-    canonical: "/feedback/",
-  },
-};
-
-export default function FeedbackPage() {
+function FeedbackPageApp() {
   return (
     <div className="arv-root arv-subpage">
       <header className="arv-404-nav">
         <div className="arv-wrap arv-404-nav-in">
-          <Link href="/" className="arv-brand" aria-label="Arvostra Home">
+          <a href="./index.html" className="arv-brand" aria-label="Arvostra Home">
             <ArvostraMark size={24} />
             <span>{BRAND.name}</span>
-          </Link>
+          </a>
           <div className="arv-row">
             <ThemeToggle />
-            <Link href="/" className="arv-btn arv-btn-ghost arv-btn-sm">
+            <a href="./index.html" className="arv-btn arv-btn-ghost arv-btn-sm">
               ← Back to Arvostra
-            </Link>
+            </a>
           </div>
         </div>
       </header>
@@ -43,12 +35,12 @@ export default function FeedbackPage() {
             {BRAND.founder}
           </span>
           <div className="arv-row" style={{ gap: 16 }}>
-            <Link href="/#demos" className="arv-link">
+            <a href="./index.html#demos" className="arv-link">
               Live Demos
-            </Link>
-            <Link href="/#inquiry" className="arv-link">
+            </a>
+            <a href="./index.html#inquiry" className="arv-link">
               Start a Project
-            </Link>
+            </a>
             <a href={`mailto:${BRAND.contactEmail}`} className="arv-link">
               {BRAND.contactEmail}
               <Icon
@@ -63,3 +55,9 @@ export default function FeedbackPage() {
     </div>
   );
 }
+
+createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <FeedbackPageApp />
+  </React.StrictMode>
+);

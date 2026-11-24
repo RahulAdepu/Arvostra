@@ -1,12 +1,11 @@
 [build]
   command = "npm run build"
-  publish = "out"
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "22"
-  NEXT_PUBLIC_ENABLE_NETLIFY_FORMS = "true"
-  NEXT_PUBLIC_SITE_URL = "https://arvostra.com"
-  NEXT_PUBLIC_CONTACT_EMAIL = "rahuladepu99@gmail.com"
+  VITE_ENABLE_NETLIFY_FORMS = "true"
+  VITE_CONTACT_EMAIL = "rahuladepu99@gmail.com"
 
 [[headers]]
   for = "/*"
@@ -17,9 +16,19 @@
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
 [[headers]]
-  for = "/_next/static/*"
+  for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+[[redirects]]
+  from = "/feedback"
+  to = "/feedback.html"
+  status = 200
+
+[[redirects]]
+  from = "/feedback/"
+  to = "/feedback.html"
+  status = 200
 
 [[redirects]]
   from = "/*"

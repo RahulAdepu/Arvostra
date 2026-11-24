@@ -1,8 +1,5 @@
 import { getContactEmail } from "./submitInquiry";
-import {
-  buildFeedbackMailto,
-  FeedbackPayload,
-} from "./validation";
+import { buildFeedbackMailto, FeedbackPayload } from "./validation";
 
 export type FeedbackDeliveryResult =
   | {
@@ -36,11 +33,6 @@ function generateFeedbackRef(): string {
   return `ARV-FB-${ymd}-${rand}`;
 }
 
-function getBasePath(): string {
-  const raw = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").trim();
-  return raw ? `/${raw.replace(/^\/+|\/+$/g, "")}` : "";
-}
-
 function isLocalhostHost(): boolean {
   if (typeof window === "undefined") return false;
   const h = window.location.hostname;
@@ -48,7 +40,7 @@ function isLocalhostHost(): boolean {
 }
 
 function isNetlifyHost(): boolean {
-  if (process.env.NEXT_PUBLIC_ENABLE_NETLIFY_FORMS === "true") {
+  if (import.meta.env.VITE_ENABLE_NETLIFY_FORMS === "true") {
     return !isLocalhostHost();
   }
   if (typeof window === "undefined") return false;
@@ -128,11 +120,10 @@ export async function submitStaticFeedback(
   }
 
   const referenceId = generateFeedbackRef();
-  const web3FormsKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY?.trim();
-  const formspreeEndpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT?.trim();
-  const webhookUrl = process.env.NEXT_PUBLIC_INQUIRY_WEBHOOK_URL?.trim();
+  const web3FormsKey = (import.meta.env.VITE_WEB3FORMS_KEY as string | undefined)?.trim();
+  const formspreeEndpoint = (import.meta.env.VITE_FORMSPREE_ENDPOINT as string | undefined)?.trim();
+  const webhookUrl = (import.meta.env.VITE_INQUIRY_WEBHOOK_URL as string | undefined)?.trim();
 
-  // Provider 1: Web3Forms (works on GitHub Pages & Netlify)
   if (web3FormsKey) {
     try {
       const res = await fetch("https://api.web3forms.com/submit", {
@@ -144,7 +135,7 @@ export async function submitStaticFeedback(
         body: JSON.stringify({
           access_key: web3FormsKey,
           subject: `[Arvostra ${payload.type}] ${payload.area} (${referenceId})`,
-          from_name: "Arvostra Feedback Widget",
+          from_name: "Arvostra Feedback",
           replyto: payload.email || contactEmail,
           botcheck: "",
           reference_id: referenceId,
@@ -184,7 +175,6 @@ export async function submitStaticFeedback(
     }
   }
 
-  // Provider 2: Formspree / Custom Webhook
   const externalEndpoint = formspreeEndpoint || webhookUrl;
   if (externalEndpoint) {
     try {
@@ -227,7 +217,6 @@ export async function submitStaticFeedback(
     }
   }
 
-  // Provider 3: Netlify Forms auto-detect (separate "arvostra-feedback" form)
   if (isNetlifyHost()) {
     try {
       const params = new URLSearchParams();
@@ -241,7 +230,7 @@ export async function submitStaticFeedback(
       params.append("techContext", payload.techContext || "");
       params.append("details", payload.details);
 
-      const res = await fetch(`${getBasePath()}/__forms.html`, {
+      const res = await fetch("./__forms.html", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: params.toString(),
@@ -252,7 +241,7 @@ export async function submitStaticFeedback(
         (Boolean(res.headers.get("x-nf-request-id")) ||
           (res.headers.get("server") || "").toLowerCase().includes("netlify") ||
           window.location.hostname.endsWith(".netlify.app") ||
-          process.env.NEXT_PUBLIC_ENABLE_NETLIFY_FORMS === "true");
+          import.meta.env.VITE_ENABLE_NETLIFY_FORMS === "true");
 
       if (isConfirmedNetlify) {
         saveCooldown(fingerprint);
@@ -280,7 +269,7 @@ export async function submitStaticFeedback(
   return {
     status: "unconfigured",
     message:
-      "Automated relay is not connected on this static preview (set NEXT_PUBLIC_WEB3FORMS_KEY for GitHub Pages, or deploy to Netlify for built-in Netlify Forms).",
+      "Automated relay is not connected on this static build (set VITE_WEB3FORMS_KEY for GitHub Pages, or deploy to Netlify for built-in Netlify Forms).",
     mailtoHref,
     contactEmail,
   };

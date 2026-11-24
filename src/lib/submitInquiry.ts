@@ -35,13 +35,9 @@ function generateReferenceId(): string {
 
 export function getContactEmail(): string {
   return (
-    process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || BRAND.contactEmail
+    (import.meta.env.VITE_CONTACT_EMAIL as string | undefined)?.trim() ||
+    BRAND.contactEmail
   );
-}
-
-function getBasePath(): string {
-  const raw = (process.env.NEXT_PUBLIC_BASE_PATH ?? "").trim();
-  return raw ? `/${raw.replace(/^\/+|\/+$/g, "")}` : "";
 }
 
 function isLocalhostHost(): boolean {
@@ -51,7 +47,7 @@ function isLocalhostHost(): boolean {
 }
 
 function isNetlifyHost(): boolean {
-  if (process.env.NEXT_PUBLIC_ENABLE_NETLIFY_FORMS === "true") {
+  if (import.meta.env.VITE_ENABLE_NETLIFY_FORMS === "true") {
     return !isLocalhostHost();
   }
   if (typeof window === "undefined") return false;
@@ -64,11 +60,15 @@ function checkSessionCooldown(fingerprint: string): string | null {
     const raw = window.sessionStorage.getItem(COOLDOWN_STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as { fp?: string; ts?: number };
-    if (parsed.fp === fingerprint && parsed.ts && Date.now() - parsed.ts < COOLDOWN_MS) {
+    if (
+      parsed.fp === fingerprint &&
+      parsed.ts &&
+      Date.now() - parsed.ts < COOLDOWN_MS
+    ) {
       return "This exact inquiry was just submitted. Please wait a minute or update your details before sending again.";
     }
   } catch {
-    // Ignore storage access errors (private browsing / strict storage)
+    // Ignore storage access errors
   }
   return null;
 }
@@ -85,20 +85,12 @@ function recordSessionCooldown(fingerprint: string) {
   }
 }
 
-/**
- * Static-host-safe multi-provider inquiry submission:
- * 1. Web3Forms (works on GitHub Pages, Netlify, and custom domains — free tier)
- * 2. Formspree / Custom Webhook (optional static-friendly endpoints)
- * 3. Netlify Forms (auto-enabled on Netlify via netlify.toml + public/__forms.html)
- * 4. Honest fallback (never claims success unless a provider confirmed delivery)
- */
 export async function submitStaticInquiry(
   payload: InquiryPayload
 ): Promise<InquiryDeliveryResult> {
   const contactEmail = getContactEmail();
   const mailtoHref = buildMailtoFallback(contactEmail, payload);
 
-  // Spam protection: honeypot trap
   if (payload.websiteTrap && payload.websiteTrap.trim().length > 0) {
     return {
       status: "error",
@@ -108,7 +100,6 @@ export async function submitStaticInquiry(
     };
   }
 
-  // Spam protection: superhuman submit speed (< 1.5s)
   if (typeof payload.startedAt === "number" && Date.now() - payload.startedAt < 1500) {
     return {
       status: "error",
@@ -118,7 +109,6 @@ export async function submitStaticInquiry(
     };
   }
 
-  // Duplicate submission guard across reloads
   const fingerprint = `${payload.email.toLowerCase()}|${payload.serviceCategory}|${payload.description.slice(0, 140)}`;
   const cooldownError = checkSessionCooldown(fingerprint);
   if (cooldownError) {
@@ -131,11 +121,10 @@ export async function submitStaticInquiry(
   }
 
   const referenceId = generateReferenceId();
-  const web3FormsKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY?.trim();
-  const formspreeEndpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT?.trim();
-  const webhookUrl = process.env.NEXT_PUBLIC_INQUIRY_WEBHOOK_URL?.trim();
+  const web3FormsKey = (import.meta.env.VITE_WEB3FORMS_KEY as string | undefined)?.trim();
+  const formspreeEndpoint = (import.meta.env.VITE_FORMSPREE_ENDPOINT as string | undefined)?.trim();
+  const webhookUrl = (import.meta.env.VITE_INQUIRY_WEBHOOK_URL as string | undefined)?.trim();
 
-  // Provider 1: Web3Forms (works on GitHub Pages & Netlify)
   if (web3FormsKey) {
     try {
       const res = await fetch("https://api.web3forms.com/submit", {
@@ -192,7 +181,6 @@ export async function submitStaticInquiry(
     }
   }
 
-  // Provider 2: Formspree or Custom Webhook
   const externalEndpoint = formspreeEndpoint || webhookUrl;
   if (externalEndpoint) {
     try {
@@ -234,7 +222,6 @@ export async function submitStaticInquiry(
     }
   }
 
-  // Provider 3: Netlify Forms auto-detect (works natively on Netlify)
   if (isNetlifyHost()) {
     try {
       const params = new URLSearchParams();
@@ -256,7 +243,7 @@ export async function submitStaticInquiry(
         payload.additionalRequirements || ""
       );
 
-      const res = await fetch(`${getBasePath()}/__forms.html`, {
+      const res = await fetch("./__forms.html", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: params.toString(),
@@ -267,7 +254,7 @@ export async function submitStaticInquiry(
         (Boolean(res.headers.get("x-nf-request-id")) ||
           (res.headers.get("server") || "").toLowerCase().includes("netlify") ||
           window.location.hostname.endsWith(".netlify.app") ||
-          process.env.NEXT_PUBLIC_ENABLE_NETLIFY_FORMS === "true");
+          import.meta.env.VITE_ENABLE_NETLIFY_FORMS === "true");
 
       if (isConfirmedNetlify) {
         recordSessionCooldown(fingerprint);
@@ -292,11 +279,10 @@ export async function submitStaticInquiry(
     }
   }
 
-  // Honest Fallback: neither Web3Forms nor Netlify runtime is active
   return {
     status: "unconfigured",
     message:
-      "Automated form relay is not yet connected on this static preview (set NEXT_PUBLIC_WEB3FORMS_KEY for GitHub Pages, or deploy to Netlify for built-in Netlify Forms).",
+      "Automated form relay is not yet connected on this static build (set VITE_WEB3FORMS_KEY for GitHub Pages, or deploy to Netlify for built-in Netlify Forms).",
     mailtoHref,
     contactEmail,
   };

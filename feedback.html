@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f4ee" />
+
+    <title>Report a Bug or Suggestion | Arvostra</title>
+    <meta
+      name="description"
+      content="Report a bug, broken link, or suggest a new demo or feature for Arvostra. Anonymous-friendly, privacy-conscious, and reviewed directly by Rahul Adepu."
+    />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+
+    <!-- Default to light mode; only switch to dark if user explicitly chose dark -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("arvostra_theme");
+          var theme = saved === "dark" ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+          document.documentElement.style.colorScheme = theme;
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) {
+            meta.setAttribute(
+              "content",
+              theme === "dark" ? "#0a1b1e" : "#f5f4ee"
+            );
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/feedback.tsx"></script>
+  </body>
+</html>
