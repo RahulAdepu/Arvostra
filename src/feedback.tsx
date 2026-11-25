@@ -3,13 +3,15 @@ import { createRoot } from "react-dom/client";
 import { BRAND } from "./lib/data";
 import { ArvostraMark, Icon, ICONS } from "./components/Icons";
 import { FeedbackSection } from "./components/FeedbackSection";
+import { InteractiveDotGrid } from "./components/InteractiveDotGrid";
 import { ThemeToggle } from "./components/ThemeToggle";
 import "./styles.css";
 
 function FeedbackPageApp() {
   return (
     <div className="arv-root arv-subpage">
-      <header className="arv-404-nav">
+      <InteractiveDotGrid />
+      <header className="arv-404-nav arv-page-layer">
         <div className="arv-wrap arv-404-nav-in">
           <a href="./index.html" className="arv-brand" aria-label="Arvostra Home">
             <ArvostraMark size={24} />
@@ -24,11 +26,11 @@ function FeedbackPageApp() {
         </div>
       </header>
 
-      <main className="arv-subpage-main">
+      <main className="arv-subpage-main arv-page-layer">
         <FeedbackSection standalone />
       </main>
 
-      <footer className="arv-subpage-foot">
+      <footer className="arv-subpage-foot arv-page-layer">
         <div className="arv-wrap arv-subpage-foot-in">
           <span>
             © {new Date().getFullYear()} {BRAND.name} · Founded by{" "}

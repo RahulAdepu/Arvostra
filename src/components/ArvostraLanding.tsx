@@ -11,6 +11,7 @@ import {
 } from "@/lib/data";
 import { markedWords, useReducedMotion } from "@/lib/hooks";
 import { Navbar } from "./Navbar";
+import { InteractiveDotGrid } from "./InteractiveDotGrid";
 import { HeroWorkspace } from "./HeroWorkspace";
 import { EditorialStatement } from "./EditorialStatement";
 import { DemosMarketplace } from "./DemosMarketplace";
@@ -427,6 +428,7 @@ export function ArvostraLanding() {
 
   return (
     <div ref={rootRef} className="arv-root" id="top" data-sec="top">
+      <InteractiveDotGrid />
       <a href="#main-content" className="arv-skip-link">
         Skip to content
       </a>
@@ -438,11 +440,10 @@ export function ArvostraLanding() {
         onSelectDemoCategory={(cat) => setDemoCategory(cat)}
       />
 
-      <main id="main-content">
+      <main id="main-content" className="arv-page-layer">
         {/* Hero */}
         <section className="arv-hero" data-sec="hero">
           <span className="arv-hero-glow" aria-hidden="true" />
-          <span className="arv-hero-grid" aria-hidden="true" />
 
           <div className="arv-wrap arv-hero-head">
             <div className="arv-hero-eyebrow">WEB • AI • CLOUD SYSTEMS</div>

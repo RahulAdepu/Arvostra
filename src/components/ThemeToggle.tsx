@@ -1,9 +1,19 @@
-"use client";
-
 import * as React from "react";
 
 type Theme = "light" | "dark";
 const STORAGE_KEY = "arvostra_theme";
+
+function readStoredTheme(): Theme {
+  try {
+    return window.localStorage.getItem(STORAGE_KEY) === "dark"
+      ? "dark"
+      : "light";
+  } catch {
+    return document.documentElement.getAttribute("data-theme") === "dark"
+      ? "dark"
+      : "light";
+  }
+}
 
 function applyTheme(theme: Theme) {
   document.documentElement.setAttribute("data-theme", theme);
@@ -12,6 +22,9 @@ function applyTheme(theme: Theme) {
   if (meta) {
     meta.setAttribute("content", theme === "dark" ? "#0a1b1e" : "#f5f4ee");
   }
+  window.dispatchEvent(
+    new CustomEvent("arvostra-theme-change", { detail: theme })
+  );
 }
 
 export function ThemeToggle() {
@@ -19,12 +32,26 @@ export function ThemeToggle() {
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
-    const current =
-      document.documentElement.getAttribute("data-theme") === "dark"
-        ? "dark"
-        : "light";
-    setTheme(current);
+    const syncFromStorage = () => {
+      const next = readStoredTheme();
+      setTheme(next);
+      applyTheme(next);
+    };
+
+    syncFromStorage();
     setMounted(true);
+
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === STORAGE_KEY) syncFromStorage();
+    };
+    const onPageShow = () => syncFromStorage();
+
+    window.addEventListener("storage", onStorage);
+    window.addEventListener("pageshow", onPageShow);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      window.removeEventListener("pageshow", onPageShow);
+    };
   }, []);
 
   const toggle = () => {

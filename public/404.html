@@ -398,11 +398,28 @@
           toggleBtn.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
           toggleBtn.setAttribute("aria-pressed", String(isDark));
         }
-        syncThemeIcon();
+        function applyStoredTheme() {
+          var saved = "light";
+          try {
+            saved = localStorage.getItem("arvostra_theme") === "dark" ? "dark" : "light";
+          } catch (e) {}
+          document.documentElement.setAttribute("data-theme", saved);
+          document.documentElement.style.colorScheme = saved;
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute("content", saved === "dark" ? "#0a1b1e" : "#f5f4ee");
+          syncThemeIcon();
+        }
+        applyStoredTheme();
+        window.addEventListener("storage", function (e) {
+          if (e.key === "arvostra_theme") applyStoredTheme();
+        });
+        window.addEventListener("pageshow", applyStoredTheme);
         toggleBtn.addEventListener("click", function () {
           var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
           document.documentElement.setAttribute("data-theme", next);
           document.documentElement.style.colorScheme = next;
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute("content", next === "dark" ? "#0a1b1e" : "#f5f4ee");
           try { localStorage.setItem("arvostra_theme", next); } catch (e) {}
           syncThemeIcon();
         });

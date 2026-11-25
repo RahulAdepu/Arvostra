@@ -115,6 +115,22 @@ body {
   isolation: isolate;
 }
 
+/* Single seamless cursor-reactive dot grid layer */
+.arv-dot-grid {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.arv-page-layer,
+.arv-foot {
+  position: relative;
+  z-index: 1;
+}
+
 .arv-root *,
 .arv-root *::before,
 .arv-root *::after {
@@ -1828,7 +1844,7 @@ body {
 
 /* Sticky Capabilities Stage */
 .arv-feats {
-  background: color-mix(in srgb, var(--arv-page) 60%, var(--arv-rule));
+  background: color-mix(in srgb, var(--arv-rule) 36%, transparent);
 }
 
 .arv-feat-label {
