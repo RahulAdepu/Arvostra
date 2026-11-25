@@ -1,10 +1,8 @@
-"use client";
-
 import * as React from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
-  DemoCategory,
+  CORE_SERVICES,
   DemoItem,
   DEMOS,
   DemoSandboxId,
@@ -13,20 +11,20 @@ import { markedWords, useReducedMotion } from "@/lib/hooks";
 import { Navbar } from "./Navbar";
 import { InteractiveDotGrid } from "./InteractiveDotGrid";
 import { HeroWorkspace } from "./HeroWorkspace";
-import { EditorialStatement } from "./EditorialStatement";
-import { DemosMarketplace } from "./DemosMarketplace";
 import { DemoSandboxModal } from "./DemoSandboxModal";
-import { ServicesSection } from "./ServicesSection";
-import { ProcessSection } from "./ProcessSection";
-import { FounderSection } from "./FounderSection";
-import { FaqSection } from "./FaqSection";
 import { InquiryPrefill, InquirySection } from "./InquirySection";
 import { Footer } from "./Footer";
+import { MobileQrModal } from "./MobileQr";
+import { Icon, ICONS, MarkedText } from "./Icons";
+import { DemoThumbnail } from "./DemosMarketplace";
 
 const useIsoLayoutEffect =
   typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect;
 
 const HERO_TITLE = "Practical *software* and *AI*\nsystems built for modern businesses.";
+
+// Top 3 flagship demos (1 Website Template, 1 Business Tool, 1 AI Workflow)
+const FEATURED_DEMOS = DEMOS.slice(0, 3);
 
 export function ArvostraLanding() {
   const reduced = useReducedMotion();
@@ -34,12 +32,10 @@ export function ArvostraLanding() {
   const sentinelRef = React.useRef<HTMLSpanElement | null>(null);
 
   const [scrolled, setScrolled] = React.useState(false);
-  const [activeScene, setActiveScene] = React.useState(0);
-  const [demoCategory, setDemoCategory] = React.useState<"All" | DemoCategory>("All");
   const [openDemo, setOpenDemo] = React.useState<DemoItem | null>(null);
+  const [qrOpen, setQrOpen] = React.useState(false);
   const [prefill, setPrefill] = React.useState<InquiryPrefill>({ signal: 0 });
 
-  // Smooth anchor scrolling scoped within the page
   const scrollToSection = React.useCallback(
     (id: string) => {
       const root = rootRef.current;
@@ -98,15 +94,27 @@ export function ArvostraLanding() {
     [handlePrefillInquiry]
   );
 
-  const handleSelectService = React.useCallback(
-    (category: string, serviceTitle: string) => {
-      handlePrefillInquiry({
-        serviceCategory: category,
-        description: `Interested in ${serviceTitle}. Here's what I'm looking to build: `,
-      });
-    },
-    [handlePrefillInquiry]
-  );
+  // Support cross-page prefill from ./demos.html or ./services.html (?service=...&demo=...&note=...)
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const service = params.get("service");
+    const demo = params.get("demo");
+    const note = params.get("note");
+    if (service || demo || note) {
+      setPrefill((prev) => ({
+        serviceCategory: service || (demo ? "Customize a Demo" : undefined),
+        selectedDemo: demo || undefined,
+        description:
+          note ||
+          (demo
+            ? `I'd like to customize the "${demo}" solution for my business.`
+            : undefined),
+        signal: prev.signal + 1,
+      }));
+      setTimeout(() => scrollToSection("inquiry"), 120);
+    }
+  }, [scrollToSection]);
 
   // Sticky nav frosted backdrop observer
   React.useEffect(() => {
@@ -119,29 +127,7 @@ export function ArvostraLanding() {
     return () => io.disconnect();
   }, []);
 
-  // Sticky feature stage active scene observer
-  React.useEffect(() => {
-    const root = rootRef.current;
-    if (!root || typeof IntersectionObserver === "undefined") return;
-    const blocks = Array.from(
-      root.querySelectorAll("[data-feat]")
-    ) as HTMLElement[];
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            const idx = Number((entry.target as HTMLElement).dataset.feat ?? 0);
-            setActiveScene(idx);
-          }
-        }
-      },
-      { rootMargin: "-42% 0px -42% 0px" }
-    );
-    blocks.forEach((b) => io.observe(b));
-    return () => io.disconnect();
-  }, []);
-
-  // GSAP ScrollTrigger choreography (matching Teal Treasury Landing motion design)
+  // GSAP ScrollTrigger choreography for the lean homepage
   useIsoLayoutEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -162,7 +148,6 @@ export function ArvostraLanding() {
         };
         if (!motion) return;
 
-        // Top scroll progress hairline
         gsap.fromTo(
           q(".arv-progress"),
           { scaleX: 0 },
@@ -178,7 +163,6 @@ export function ArvostraLanding() {
           }
         );
 
-        // Hero entrance
         const intro = gsap.timeline({ defaults: { ease: "power4.out" } });
         intro
           .from(q(".arv-hero-eyebrow"), { y: 12, autoAlpha: 0, duration: 0.7 })
@@ -194,16 +178,15 @@ export function ArvostraLanding() {
           )
           .from(
             q(".arv-device-wrap"),
-            { y: 110, autoAlpha: 0, duration: 1.15 },
+            { y: 100, autoAlpha: 0, duration: 1.1 },
             "-=0.7"
           )
           .from(
             q(".arv-float"),
-            { x: 56, autoAlpha: 0, duration: 1, stagger: 0.14 },
-            "-=0.85"
+            { x: 52, autoAlpha: 0, duration: 0.95, stagger: 0.14 },
+            "-=0.82"
           );
 
-        // 3D device tilt stands upright as you scroll
         const device = one(".arv-device");
         if (device) {
           gsap.fromTo(
@@ -224,11 +207,10 @@ export function ArvostraLanding() {
           );
         }
 
-        // Parallax drift on floating hero telemetry cards
         if (wide) {
           q(".arv-float-in").forEach((el, i) =>
             gsap.to(el, {
-              y: -60 - i * 50,
+              y: -58 - i * 48,
               rotate: i ? 1.8 : -1.8,
               ease: "none",
               scrollTrigger: {
@@ -241,7 +223,6 @@ export function ArvostraLanding() {
           );
         }
 
-        // Subtle ambient glow parallax
         gsap.to(q(".arv-hero-glow"), {
           yPercent: 28,
           scale: 1.2,
@@ -254,129 +235,29 @@ export function ArvostraLanding() {
           },
         });
 
-        // Word-by-word scroll inking on Studio Philosophy statement
-        const bwords = q(".arv-bword");
-        if (bwords.length) {
-          gsap.fromTo(
-            bwords,
-            { opacity: 0.16 },
-            {
-              opacity: 1,
-              stagger: 0.05,
-              ease: "none",
-              scrollTrigger: {
-                trigger: one(".arv-benefits-text"),
-                start: "top 82%",
-                end: "bottom 48%",
-                scrub: true,
-              },
-            }
-          );
-        }
-
-        // Pillar hairline rules draw in
-        gsap.fromTo(
-          q(".arv-stat-rule"),
-          { scaleX: 0 },
-          {
-            scaleX: 1,
-            duration: 1.1,
-            ease: "power3.inOut",
-            stagger: 0.12,
-            scrollTrigger: {
-              trigger: one(".arv-stats"),
-              start: "top 86%",
-              once: true,
-            },
-          }
-        );
-
-        // Sticky capabilities stage unfolds from rounded inset
-        q(".arv-stage, .arv-feat-inline").forEach((el) =>
-          gsap.fromTo(
-            el,
-            { clipPath: "inset(10% 7% 10% 7% round 32px)", scale: 0.96 },
-            {
-              clipPath: "inset(0% 0% 0% 0% round 14px)",
-              scale: 1,
-              ease: "none",
-              scrollTrigger: {
-                trigger: el,
-                start: "top 92%",
-                end: "top 40%",
-                scrub: 0.6,
-              },
-            }
-          )
-        );
-
-        // Staggered batch rise reveals
         const riseEls = q("[data-arv-rise]");
-        gsap.set(riseEls, { y: 30, autoAlpha: 0 });
-        ScrollTrigger.batch(riseEls, {
-          start: "top 90%",
-          once: true,
-          onEnter: (els) =>
-            gsap.to(els, {
-              y: 0,
-              autoAlpha: 1,
-              duration: 0.85,
-              ease: "power3.out",
-              stagger: 0.07,
-              overwrite: true,
-            }),
-        });
-
-        // Checkmark stroke draw-in inside Services section
-        gsap.fromTo(
-          q(".arv-price-check path"),
-          { strokeDashoffset: 26 },
-          {
-            strokeDashoffset: 0,
-            duration: 0.65,
-            ease: "power2.out",
-            stagger: 0.14,
-            scrollTrigger: {
-              trigger: one(".arv-price-list"),
-              start: "top 82%",
-              once: true,
-            },
-          }
-        );
-
-        // Founder precision dial rotates with page scroll
-        const opCard = one(".arv-op");
-        if (opCard) {
-          gsap.to(q(".arv-dial-ticks"), {
-            rotation: 140,
-            svgOrigin: "160 160",
-            ease: "none",
-            scrollTrigger: {
-              trigger: opCard,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 0.5,
-            },
-          });
-          gsap.to(q(".arv-dial-ring"), {
-            rotation: -220,
-            svgOrigin: "160 160",
-            ease: "none",
-            scrollTrigger: {
-              trigger: opCard,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 0.8,
-            },
+        if (riseEls.length) {
+          gsap.set(riseEls, { y: 26, autoAlpha: 0 });
+          ScrollTrigger.batch(riseEls, {
+            start: "top 92%",
+            once: true,
+            onEnter: (els) =>
+              gsap.to(els, {
+                y: 0,
+                autoAlpha: 1,
+                duration: 0.8,
+                ease: "power3.out",
+                stagger: 0.06,
+                overwrite: true,
+              }),
           });
         }
 
-        // Inquiry ambient card expands smoothly into frame
         const ctaCard = one(".arv-cta");
         if (ctaCard) {
           gsap.fromTo(
             ctaCard,
-            { scale: 0.94, borderRadius: 34 },
+            { scale: 0.95, borderRadius: 30 },
             {
               scale: 1,
               borderRadius: 14,
@@ -384,14 +265,13 @@ export function ArvostraLanding() {
               scrollTrigger: {
                 trigger: ctaCard,
                 start: "top 98%",
-                end: "top 55%",
+                end: "top 58%",
                 scrub: 0.6,
               },
             }
           );
         }
 
-        // Giant footer wordmark rises letter-by-letter
         const bigMark = one(".arv-bigmark");
         if (bigMark) {
           gsap.from(q(".arv-bigmark span"), {
@@ -435,13 +315,14 @@ export function ArvostraLanding() {
       <span ref={sentinelRef} className="arv-sentinel" aria-hidden="true" />
 
       <Navbar
+        activePage="home"
         scrolled={scrolled}
         onNavigate={onNavigate}
-        onSelectDemoCategory={(cat) => setDemoCategory(cat)}
+        onOpenQr={() => setQrOpen(true)}
       />
 
       <main id="main-content" className="arv-page-layer">
-        {/* Hero */}
+        {/* 1. Hero + Interactive Studio Console */}
         <section className="arv-hero" data-sec="hero">
           <span className="arv-hero-glow" aria-hidden="true" />
 
@@ -466,11 +347,7 @@ export function ArvostraLanding() {
               Arvostra designs, automates, and deploys fast websites, intelligent workflows, and reliable cloud infrastructure.
             </p>
             <div className="arv-hero-ctas arv-hero-fade">
-              <a
-                className="arv-btn arv-btn-lilac"
-                href="#demos"
-                onClick={onNavigate("#demos")}
-              >
+              <a className="arv-btn arv-btn-lilac" href="./demos.html">
                 Explore Live Demos
               </a>
               <a
@@ -490,39 +367,142 @@ export function ArvostraLanding() {
           />
         </section>
 
-        {/* Studio Philosophy */}
-        <EditorialStatement reduced={reduced} />
+        {/* 2. Featured Live Demos Snapshot (Top 3 + Link to Full Demos Page) */}
+        <section className="arv-sec arv-home-demos" id="demos" data-sec="demos">
+          <div className="arv-wrap">
+            <div className="arv-demos-head">
+              <div>
+                <div className="arv-label" style={{ marginBottom: 14 }}>
+                  Featured Solutions
+                </div>
+                <h2 className="arv-h2" data-arv-rise="">
+                  <MarkedText text="Built &amp; *Ready to Deploy*." />
+                </h2>
+                <p className="arv-sec-sub" data-arv-rise="" style={{ marginTop: 12 }}>
+                  Test working prototypes directly in your browser or request a tailored version for your business.
+                </p>
+              </div>
+              <a
+                href="./demos.html"
+                className="arv-btn arv-btn-ghost arv-btn-sm"
+                data-arv-rise=""
+              >
+                Explore all {DEMOS.length} demos
+                <Icon d={ICONS.arrow} size={14} />
+              </a>
+            </div>
 
-        {/* Live Demos & Marketplace + Sticky Capabilities Stage */}
-        <DemosMarketplace
-          activeCategory={demoCategory}
-          onCategoryChange={setDemoCategory}
-          activeScene={activeScene}
-          reduced={reduced}
-          onOpenDemo={(demo) => setOpenDemo(demo)}
-          onCustomizeDemo={handleCustomizeDemo}
-        />
+            <div className="arv-demo-grid">
+              {FEATURED_DEMOS.map((demo) => (
+                <article
+                  key={demo.id}
+                  className="arv-demo-card"
+                  data-arv-rise=""
+                >
+                  <div className="arv-demo-thumb">
+                    <DemoThumbnail art={demo.art} />
+                    <span className="arv-demo-cat">{demo.category}</span>
+                    {demo.badge ? (
+                      <span className="arv-demo-badge">{demo.badge}</span>
+                    ) : null}
+                  </div>
+                  <div className="arv-demo-body">
+                    <h3 className="arv-h3">{demo.name}</h3>
+                    <p className="arv-demo-desc">{demo.shortDescription}</p>
+                    <div className="arv-demo-meta">
+                      <span className="arv-demo-price">{demo.pricing}</span>
+                    </div>
+                    <div className="arv-demo-actions">
+                      <button
+                        type="button"
+                        className="arv-btn arv-btn-dark arv-btn-sm"
+                        onClick={() => setOpenDemo(demo)}
+                      >
+                        <Icon d={ICONS.play} size={12} />
+                        Live Demo
+                      </button>
+                      <button
+                        type="button"
+                        className="arv-btn arv-btn-ghost arv-btn-sm"
+                        onClick={() => handleCustomizeDemo(demo)}
+                      >
+                        Customize
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
 
-        {/* Core Services */}
-        <ServicesSection
-          reduced={reduced}
-          onSelectService={handleSelectService}
-        />
+        {/* 3. Concise Core Services Snapshot (Links to Full Services & Process Page) */}
+        <section className="arv-sec arv-price arv-home-services" id="services" data-sec="services">
+          <span className="arv-price-glow" aria-hidden="true" />
+          <div className="arv-wrap">
+            <div className="arv-demos-head" style={{ marginBottom: 36 }}>
+              <div>
+                <div className="arv-label" style={{ marginBottom: 14 }}>
+                  Core Services
+                </div>
+                <h2 className="arv-h2 arv-deep-title" data-arv-rise="">
+                  <MarkedText text="Four focused disciplines, *built end-to-end*" />
+                </h2>
+              </div>
+              <a
+                href="./services.html"
+                className="arv-link-arrow"
+                data-arv-rise=""
+              >
+                Process, deliverables &amp; timelines
+                <Icon d={ICONS.arrow} size={15} />
+              </a>
+            </div>
 
-        {/* How It Works */}
-        <ProcessSection />
+            <div className="arv-services-grid arv-services-compact">
+              {CORE_SERVICES.map((svc) => (
+                <article
+                  key={svc.number}
+                  className="arv-service-card arv-service-card-compact"
+                  data-arv-rise=""
+                >
+                  <div className="arv-service-num">{svc.number}</div>
+                  <h3 className="arv-service-title">{svc.title}</h3>
+                  <p className="arv-service-desc">{svc.description}</p>
+                  <button
+                    type="button"
+                    className="arv-service-cta"
+                    onClick={() =>
+                      handlePrefillInquiry({
+                        serviceCategory: svc.inquiryCategory,
+                        description: `Interested in ${svc.title}. Here is what I am building: `,
+                      })
+                    }
+                  >
+                    {svc.ctaLabel}
+                    <Icon d={ICONS.arrow} size={14} />
+                  </button>
+                </article>
+              ))}
+            </div>
 
-        {/* Founder / About */}
-        <FounderSection onNavigate={onNavigate} />
+            <div className="arv-home-about-strip" data-arv-rise="">
+              <span>
+                Founded &amp; engineered directly by <b>Rahul Adepu</b> in Toronto — zero agency handoffs, 100% code ownership.
+              </span>
+              <a href="./about.html" className="arv-link-arrow">
+                Meet the founder &amp; FAQ
+                <Icon d={ICONS.arrow} size={14} />
+              </a>
+            </div>
+          </div>
+        </section>
 
-        {/* FAQ */}
-        <FaqSection onNavigate={onNavigate} />
-
-        {/* Project Inquiry */}
+        {/* 4. Project Inquiry */}
         <InquirySection prefill={prefill} reduced={reduced} />
       </main>
 
-      <Footer onNavigate={onNavigate} />
+      <Footer onNavigate={onNavigate} onOpenQr={() => setQrOpen(true)} />
 
       {/* Interactive Demo Sandbox Modal */}
       <DemoSandboxModal
@@ -530,6 +510,9 @@ export function ArvostraLanding() {
         onClose={() => setOpenDemo(null)}
         onCustomize={handleCustomizeDemo}
       />
+
+      {/* Mobile QR Code Modal */}
+      <MobileQrModal open={qrOpen} onClose={() => setQrOpen(false)} />
     </div>
   );
 }

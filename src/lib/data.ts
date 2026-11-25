@@ -51,6 +51,7 @@ export const BRAND = {
   name: "Arvostra",
   domain: "arvostra.com",
   url: "https://arvostra.com",
+  githubPagesUrl: "https://rahuladepu.github.io/Arvostra/",
   demosUrl: "https://demos.arvostra.com",
   founder: "Rahul Adepu",
   location: "Toronto, Canada",

@@ -113,7 +113,7 @@ export function FounderSection({
             <div className="arv-founder-links">
               <a
                 className="arv-link-arrow"
-                href="#inquiry"
+                href="./index.html#inquiry"
                 onClick={onNavigate("#inquiry")}
               >
                 Work directly with Rahul

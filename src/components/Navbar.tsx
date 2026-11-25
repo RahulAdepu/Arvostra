@@ -1,38 +1,42 @@
-"use client";
-
 import * as React from "react";
-import { BRAND, DemoCategory, NAV_DEMOS } from "@/lib/data";
+import { BRAND } from "@/lib/data";
 import { ArvostraMark, Icon, ICONS } from "./Icons";
 import { ThemeToggle } from "./ThemeToggle";
+import { QrNavButton } from "./MobileQr";
+
+export type ActivePage = "home" | "demos" | "services" | "about" | "feedback";
 
 interface NavbarProps {
+  activePage?: ActivePage;
   scrolled: boolean;
-  onNavigate: (href: string) => (e: React.MouseEvent) => void;
-  onSelectDemoCategory: (category: DemoCategory) => void;
+  onNavigate?: (href: string) => (e: React.MouseEvent) => void;
+  onOpenQr: () => void;
 }
 
+const NAV_ITEMS: { id: ActivePage; label: string; href: string }[] = [
+  { id: "demos", label: "Demos", href: "./demos.html" },
+  { id: "services", label: "Services", href: "./services.html" },
+  { id: "about", label: "About", href: "./about.html" },
+];
+
 export function Navbar({
+  activePage = "home",
   scrolled,
   onNavigate,
-  onSelectDemoCategory,
+  onOpenQr,
 }: NavbarProps) {
-  const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const boxRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
-    if (!dropdownOpen && !mobileOpen) return;
+    if (!mobileOpen) return;
     const onPointerDown = (e: PointerEvent) => {
       if (boxRef.current && !boxRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
         setMobileOpen(false);
       }
     };
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setDropdownOpen(false);
-        setMobileOpen(false);
-      }
+      if (e.key === "Escape") setMobileOpen(false);
     };
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
@@ -40,35 +44,25 @@ export function Navbar({
       document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [dropdownOpen, mobileOpen]);
+  }, [mobileOpen]);
+
+  const inquiryHref = activePage === "home" ? "#inquiry" : "./index.html#inquiry";
+  const homeHref = activePage === "home" ? "#top" : "./index.html";
 
   const handleLink = (href: string) => (e: React.MouseEvent) => {
-    setDropdownOpen(false);
     setMobileOpen(false);
-    onNavigate(href)(e);
+    if (href.startsWith("#") && onNavigate) {
+      onNavigate(href)(e);
+    }
   };
-
-  const handleDemoCategory = (cat: DemoCategory) => (e: React.MouseEvent) => {
-    setDropdownOpen(false);
-    setMobileOpen(false);
-    onSelectDemoCategory(cat);
-    onNavigate("#demos")(e);
-  };
-
-  const navLinks = [
-    { label: "Services", href: "#services" },
-    { label: "Process", href: "#process" },
-    { label: "About", href: "#about" },
-    { label: "FAQ", href: "#faq" },
-  ];
 
   return (
     <header className="arv-nav" data-scrolled={scrolled || undefined}>
       <div className="arv-nav-in" ref={boxRef}>
         <a
-          href="#top"
+          href={homeHref}
           className="arv-brand"
-          onClick={handleLink("#top")}
+          onClick={handleLink(homeHref)}
           aria-label="Arvostra Home"
         >
           <ArvostraMark size={24} />
@@ -76,53 +70,14 @@ export function Navbar({
         </a>
 
         <nav className="arv-nav-links" aria-label="Primary">
-          <div
-            className="arv-prod"
-            onMouseEnter={() => setDropdownOpen(true)}
-            onMouseLeave={() => setDropdownOpen(false)}
-          >
-            <button
-              type="button"
-              className="arv-nav-link"
-              aria-expanded={dropdownOpen}
-              onClick={() => setDropdownOpen((o) => !o)}
-            >
-              Demos
-              <Icon d={ICONS.down} size={13} className="arv-caret" />
-            </button>
-            <div
-              className="arv-prod-panel"
-              data-open={dropdownOpen || undefined}
-            >
-              {NAV_DEMOS.map((item, idx) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="arv-prod-item"
-                  onClick={handleDemoCategory(item.category)}
-                  tabIndex={dropdownOpen ? 0 : -1}
-                >
-                  <span className="arv-prod-ic">
-                    <Icon
-                      d={[ICONS.layers, ICONS.spark, ICONS.grid][idx % 3]}
-                      size={17}
-                    />
-                  </span>
-                  <span>
-                    <b>{item.label}</b>
-                    <small>{item.text}</small>
-                  </span>
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {navLinks.map((link) => (
+          {NAV_ITEMS.map((link) => (
             <a
-              key={link.label}
+              key={link.id}
               href={link.href}
               className="arv-nav-link"
-              onClick={handleLink(link.href)}
+              data-active={activePage === link.id || undefined}
+              aria-current={activePage === link.id ? "page" : undefined}
+              onClick={() => setMobileOpen(false)}
             >
               {link.label}
             </a>
@@ -130,11 +85,12 @@ export function Navbar({
         </nav>
 
         <div className="arv-nav-end">
+          <QrNavButton onClick={onOpenQr} />
           <ThemeToggle />
           <a
-            href="#inquiry"
+            href={inquiryHref}
             className="arv-btn arv-btn-dark arv-btn-sm"
-            onClick={handleLink("#inquiry")}
+            onClick={handleLink(inquiryHref)}
           >
             Start a Project
           </a>
@@ -155,18 +111,18 @@ export function Navbar({
           aria-hidden={!mobileOpen}
         >
           <a
-            href="#demos"
-            onClick={handleLink("#demos")}
+            href="./index.html"
+            onClick={() => setMobileOpen(false)}
             tabIndex={mobileOpen ? 0 : -1}
           >
-            Live Demos & Marketplace
+            Home
             <Icon d={ICONS.arrow} size={15} />
           </a>
-          {navLinks.map((link) => (
+          {NAV_ITEMS.map((link) => (
             <a
-              key={link.label}
+              key={link.id}
               href={link.href}
-              onClick={handleLink(link.href)}
+              onClick={() => setMobileOpen(false)}
               tabIndex={mobileOpen ? 0 : -1}
             >
               {link.label}
@@ -174,8 +130,16 @@ export function Navbar({
             </a>
           ))}
           <a
-            href="#inquiry"
-            onClick={handleLink("#inquiry")}
+            href="./feedback.html"
+            onClick={() => setMobileOpen(false)}
+            tabIndex={mobileOpen ? 0 : -1}
+          >
+            Bugs &amp; Suggestions
+            <Icon d={ICONS.arrow} size={15} />
+          </a>
+          <a
+            href={inquiryHref}
+            onClick={handleLink(inquiryHref)}
             tabIndex={mobileOpen ? 0 : -1}
             className="arv-sheet-cta"
           >

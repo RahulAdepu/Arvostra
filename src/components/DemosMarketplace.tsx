@@ -341,7 +341,7 @@ function StageScene({
 }
 
 /* --- Custom Architectural Card Thumbnails (Zero broken images!) --- */
-function DemoThumbnail({ art }: { art: DemoItem["art"] }) {
+export function DemoThumbnail({ art }: { art: DemoItem["art"] }) {
   if (art === "salon") {
     return (
       <div className="arv-art arv-art-dash" aria-hidden="true">

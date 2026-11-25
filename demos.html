@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f4ee" />
+    <title>Live Demos &amp; Marketplace | Arvostra</title>
+    <meta
+      name="description"
+      content="Explore working website templates, AI workflow assistants, and business tools built by Arvostra. Test interactive sandboxes directly in your browser."
+    />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("arvostra_theme");
+          var theme = saved === "dark" ? "dark" : "light";
+          document.documentElement.setAttribute("data-theme", theme);
+          document.documentElement.style.colorScheme = theme;
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute("content", theme === "dark" ? "#0a1b1e" : "#f5f4ee");
+        } catch (e) {}
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/demos.tsx"></script>
+  </body>
+</html>

@@ -209,24 +209,20 @@ export function FeedbackSection({
         </div>
 
         <div className="arv-fb-wrap">
-          <div className="arv-fb-head">
-            <div>
-              {standalone ? (
-                <h1 className="arv-h2 arv-fb-title">
-                  <MarkedText text="Spot a *bug* or have a *suggestion*?" />
-                </h1>
-              ) : (
+          {!standalone ? (
+            <div className="arv-fb-head">
+              <div>
                 <h2 className="arv-h2 arv-fb-title">
                   <MarkedText text="Spot a *bug* or have a *suggestion*?" />
                 </h2>
-              )}
-              <p className="arv-fine" style={{ marginTop: 10, maxWidth: 580, fontSize: 14 }}>
-                Found a broken link, layout glitch, or have an idea for a new ready-to-deploy demo or tool? Send a quick note — no account or email required.
-              </p>
+                <p className="arv-fine" style={{ marginTop: 10, maxWidth: 580, fontSize: 14 }}>
+                  Found a broken link, layout glitch, or have an idea for a new ready-to-deploy demo or tool? Send a quick note — no account or email required.
+                </p>
+              </div>
             </div>
-          </div>
+          ) : null}
 
-          <div className="arv-fb-card">
+          <div className="arv-fb-card" style={standalone ? { marginTop: 0 } : undefined}>
             {submitState.status === "success" ? (
               <div className="arv-inq-status" role="status" aria-live="polite">
                 <span className="arv-done-ic">

@@ -1,38 +1,41 @@
 import * as React from "react";
 import { BRAND } from "@/lib/data";
 import { ArvostraMark, Icon, ICONS } from "./Icons";
+import { FooterQrCard } from "./MobileQr";
 
 export function Footer({
   onNavigate,
+  onOpenQr,
 }: {
-  onNavigate: (href: string) => (e: React.MouseEvent) => void;
+  onNavigate?: (href: string) => (e: React.MouseEvent) => void;
+  onOpenQr: () => void;
 }) {
   const columns = [
     {
       title: "Studio",
       links: [
-        { label: "Overview", href: "#overview" },
-        { label: "Live Demos", href: "#demos" },
-        { label: "Core Services", href: "#services" },
-        { label: "How It Works", href: "#process" },
+        { label: "Home", href: "./index.html" },
+        { label: "Live Demos", href: "./demos.html" },
+        { label: "Services & Process", href: "./services.html" },
+        { label: "About & FAQ", href: "./about.html" },
       ],
     },
     {
       title: "Solutions",
       links: [
-        { label: "Website Templates", href: "#demos" },
-        { label: "AI & Automation", href: "#demos" },
-        { label: "Business Tools", href: "#demos" },
-        { label: "Cloud & DevOps", href: "#services" },
+        { label: "Website Templates", href: "./demos.html?category=Website%20Templates" },
+        { label: "AI & Automation", href: "./demos.html?category=AI%20%26%20Automation" },
+        { label: "Business Tools", href: "./demos.html?category=Business%20Tools" },
+        { label: "Cloud & DevOps", href: "./services.html#services" },
       ],
     },
     {
-      title: "Company",
+      title: "Connect",
       links: [
-        { label: "Founder / About", href: "#about" },
-        { label: "FAQ", href: "#faq" },
-        { label: "Start a Project", href: "#inquiry" },
+        { label: "Start a Project", href: "./index.html#inquiry" },
         { label: "Report a Bug / Feedback", href: "./feedback.html" },
+        { label: "LinkedIn", href: BRAND.linkedIn, external: true },
+        { label: "GitHub", href: BRAND.github, external: true },
       ],
     },
   ];
@@ -43,28 +46,30 @@ export function Footer({
         <div className="arv-foot-grid">
           <div className="arv-foot-brand-col">
             <a
-              href="#top"
+              href="./index.html"
               className="arv-brand"
-              onClick={onNavigate("#top")}
-              aria-label="Back to top"
+              onClick={onNavigate ? onNavigate("#top") : undefined}
+              aria-label="Arvostra Home"
             >
               <ArvostraMark size={24} />
               <span>{BRAND.name}</span>
             </a>
             <p className="arv-fine" style={{ marginTop: 12, maxWidth: 280 }}>
-              Minimalist Digital Studio & Technology Solutions Marketplace. Built in {BRAND.location}.
+              Minimalist Digital Studio &amp; Technology Solutions Marketplace. Built in {BRAND.location}.
             </p>
+            <FooterQrCard onExpand={onOpenQr} />
           </div>
 
           {columns.map((col) => (
             <div key={col.title} className="arv-foot-col">
               <b>{col.title}</b>
               {col.links.map((link) =>
-                link.href.startsWith("#") ? (
+                link.external ? (
                   <a
                     key={link.label}
                     href={link.href}
-                    onClick={onNavigate(link.href)}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     {link.label}
                   </a>
@@ -112,7 +117,7 @@ export function Footer({
         </div>
 
         <p className="arv-legal">
-          Privacy notice: Information submitted via the project inquiry form is used exclusively to respond to your request and scope potential work. Interactive demo sandboxes run locally in your browser with sample data unless explicitly noted.
+          Privacy notice: Information submitted via the project inquiry or feedback form is used exclusively to respond to your request. Interactive demo sandboxes run locally in your browser with sample data unless noted.
         </p>
       </div>
 

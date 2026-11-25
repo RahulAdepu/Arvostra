@@ -17,7 +17,7 @@ export function FaqSection({
         <div className="arv-label">FAQ</div>
         <div>
           <h2 className="arv-h2 arv-faq-title" data-arv-rise="">
-            <MarkedText text="Clear answers before\nwe *start building*" />
+            <MarkedText text={"Clear answers before\nwe *start building*"} />
           </h2>
           <ul className="arv-faq-list">
             {FAQ_ITEMS.map((item, idx) => {
@@ -45,8 +45,8 @@ export function FaqSection({
           </ul>
           <p className="arv-fine arv-faq-more">
             Have a specific technical question?{" "}
-            <a href="#inquiry" onClick={onNavigate("#inquiry")}>
-              Send a quick project brief below
+            <a href="./index.html#inquiry" onClick={onNavigate("#inquiry")}>
+              Send a quick project brief
             </a>{" "}
             or email{" "}
             <a href={`mailto:${BRAND.contactEmail}`}>{BRAND.contactEmail}</a>.
